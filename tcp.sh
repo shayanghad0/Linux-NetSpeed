@@ -8,11 +8,11 @@ export PATH
 #	Version: 1.4.0
 #	Nevisande: 千影,cx9208
 #	Blog: https://www.939.me/
-#   Tavsiye mishavad kernel 5.5 be bala estefade koniBaraye sorat behtarin BBR ro faal kon
+#   推荐使用5.5以上内核直接Fa-al kardan的bbr速度最佳
 #--------------------------------------------------
 
 sh_ver="1.4.0"
-github="raw.githubusercontent.com/shayanghad0/Linux-NetSpeed/master"
+github="raw.githubusercontent.com/chiakge/Linux-NetSpeed/master"
 
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
 Info="${Green_font_prefix}[信息]${Font_color_suffix}"
@@ -43,11 +43,11 @@ installbbr(){
 	fi
 	detele_kernel
 	BBR_grub
-echo -e ""${Tip} 重启VPS后，请重新运行ScriptFa-al kardan${Red_font_prefix}BBR/BBRMoghayyer${Font_color_suffix}"""
-	stty erase '^H' && read -p "Baraye faal kardan BBR/BBR moghayyer VPS restart lazem ast. Hala restart konam? [Y/n] :" yn
+	echo -e ""${Tip} 重启VPS后，请重新运行脚本Fa-al kardan${Red_font_prefix}BBR/BBRMoghayyer${Font_color_suffix}""
+	stty erase '^H' && read -p "需要重启VPS后，才能Fa-al kardanBBR/BBRMoghayyer，是否现在重启 ? [Y/n] :" yn
 	[ -z "${yn}" ] && yn="y"
 	if [[ $yn == [Yy] ]]; then
-echo -e ""${Info} VPS dar hale restart ast..."""
+		echo -e ""${Info} VPS dar hale restart ast...""
 		reboot
 	fi
 }
@@ -70,11 +70,11 @@ installbbrplus(){
 	fi
 	detele_kernel
 	BBR_grub
-echo -e ""${Tip} 重启VPS后，请重新运行ScriptFa-al kardan${Red_font_prefix}BBRplus${Font_color_suffix}"""
-	stty erase '^H' && read -p "Baraye faal kardan BBRplus VPS restart lazem ast. Hala restart konam? [Y/n] :" yn
+	echo -e ""${Tip} 重启VPS后，请重新运行脚本Fa-al kardan${Red_font_prefix}BBRplus${Font_color_suffix}""
+	stty erase '^H' && read -p "需要重启VPS后，才能Fa-al kardanBBRplus，是否现在重启 ? [Y/n] :" yn
 	[ -z "${yn}" ] && yn="y"
 	if [[ $yn == [Yy] ]]; then
-echo -e ""${Info} VPS dar hale restart ast..."""
+		echo -e ""${Info} VPS dar hale restart ast...""
 		reboot
 	fi
 }
@@ -96,46 +96,46 @@ installlot(){
 	fi
 	detele_kernel
 	BBR_grub
-echo -e ""${Tip} 重启VPS后，请重新运行ScriptFa-al kardan${Red_font_prefix}Lotserver${Font_color_suffix}"""
-	stty erase '^H' && read -p "Baraye faal kardan lotserver VPS restart lazem ast. Hala restart konam? [Y/n] :" yn
+	echo -e ""${Tip} 重启VPS后，请重新运行脚本Fa-al kardan${Red_font_prefix}Lotserver${Font_color_suffix}""
+	stty erase '^H' && read -p "需要重启VPS后，才能Fa-al kardanLotserver，是否现在重启 ? [Y/n] :" yn
 	[ -z "${yn}" ] && yn="y"
 	if [[ $yn == [Yy] ]]; then
-echo -e ""${Info} VPS dar hale restart ast..."""
+		echo -e ""${Info} VPS dar hale restart ast...""
 		reboot
 	fi
 }
 
-#Faal kardan BBR
+#启用BBR
 startbbr(){
 	remove_all
-echo -e "${kernel_version} | awk -F'.' '{print $1}'` -ge "5" ]]; then"
-echo -e "net.core.default_qdisc=cake" >> /etc/sysctl.conf"
-echo -e "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf"
+	if [[ `echo ${kernel_version} | awk -F'.' '{print $1}'` -ge "5" ]]; then
+		echo "net.core.default_qdisc=cake" >> /etc/sysctl.conf
+		echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
 	else
-echo -e "net.core.default_qdisc=fq" >> /etc/sysctl.conf"
-echo -e "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf"
+		echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
+		echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
 	fi
 	sysctl -p
-echo -e ""${Info}BBRfaal shod!！"""
+	echo -e ""${Info}BBRfaal shod!！""
 }
 
-#Faal kardan BBRplus
+#启用BBRplus
 startbbrplus(){
 	remove_all
-echo -e "net.core.default_qdisc=fq" >> /etc/sysctl.conf"
-echo -e "net.ipv4.tcp_congestion_control=bbrplus" >> /etc/sysctl.conf"
+	echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
+	echo "net.ipv4.tcp_congestion_control=bbrplus" >> /etc/sysctl.conf
 	sysctl -p
-echo -e ""${Info}BBRplusfaal shod!！"""
+	echo -e ""${Info}BBRplusfaal shod!！""
 }
 
-#Compile va faal kardan BBR moghayyer
+#编译并启用BBR魔改
 startbbrmod(){
 	remove_all
 	if [[ "${release}" == "centos" ]]; then
 		yum install -y make gcc
 		mkdir bbrmod && cd bbrmod
 		wget -N --no-check-certificate http://${github}/bbr/tcp_tsunami.c
-echo -e "obj-m:=tcp_tsunami.o" > Makefile"
+		echo "obj-m:=tcp_tsunami.o" > Makefile
 		make -C /lib/modules/$(uname -r)/build M=`pwd` modules CC=/usr/bin/gcc
 		chmod +x ./tcp_tsunami.ko
 		cp -rf ./tcp_tsunami.ko /lib/modules/$(uname -r)/kernel/net/ipv4
@@ -152,7 +152,7 @@ echo -e "obj-m:=tcp_tsunami.o" > Makefile"
 		apt-get -y install make gcc
 		mkdir bbrmod && cd bbrmod
 		wget -N --no-check-certificate http://${github}/bbr/tcp_tsunami.c
-echo -e "obj-m:=tcp_tsunami.o" > Makefile"
+		echo "obj-m:=tcp_tsunami.o" > Makefile
 		ln -s /usr/bin/gcc /usr/bin/gcc-4.9
 		make -C /lib/modules/$(uname -r)/build M=`pwd` modules CC=/usr/bin/gcc-4.9
 		install tcp_tsunami.ko /lib/modules/$(uname -r)/kernel
@@ -161,21 +161,21 @@ echo -e "obj-m:=tcp_tsunami.o" > Makefile"
 	fi
 	
 
-echo -e "net.core.default_qdisc=fq" >> /etc/sysctl.conf"
-echo -e "net.ipv4.tcp_congestion_control=tsunami" >> /etc/sysctl.conf"
+	echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
+	echo "net.ipv4.tcp_congestion_control=tsunami" >> /etc/sysctl.conf
 	sysctl -p
     cd .. && rm -rf bbrmod
-echo -e ""${Info}MoghayyerBBRfaal shod!！"""
+	echo -e ""${Info}MoghayyerBBRfaal shod!！""
 }
 
-#Compile va faal kardan BBR moghayyer
+#编译并启用BBR魔改
 startbbrmod_nanqinlang(){
 	remove_all
 	if [[ "${release}" == "centos" ]]; then
 		yum install -y make gcc
 		mkdir bbrmod && cd bbrmod
 		wget -N --no-check-certificate https://raw.githubusercontent.com/chiakge/Linux-NetSpeed/master/bbr/centos/tcp_nanqinlang.c
-echo -e "obj-m := tcp_nanqinlang.o" > Makefile"
+		echo "obj-m := tcp_nanqinlang.o" > Makefile
 		make -C /lib/modules/$(uname -r)/build M=`pwd` modules CC=/usr/bin/gcc
 		chmod +x ./tcp_nanqinlang.ko
 		cp -rf ./tcp_nanqinlang.ko /lib/modules/$(uname -r)/kernel/net/ipv4
@@ -192,7 +192,7 @@ echo -e "obj-m := tcp_nanqinlang.o" > Makefile"
 		apt-get -y install make gcc-4.9
 		mkdir bbrmod && cd bbrmod
 		wget -N --no-check-certificate https://raw.githubusercontent.com/chiakge/Linux-NetSpeed/master/bbr/tcp_nanqinlang.c
-echo -e "obj-m := tcp_nanqinlang.o" > Makefile"
+		echo "obj-m := tcp_nanqinlang.o" > Makefile
 		make -C /lib/modules/$(uname -r)/build M=`pwd` modules CC=/usr/bin/gcc-4.9
 		install tcp_nanqinlang.ko /lib/modules/$(uname -r)/kernel
 		cp -rf ./tcp_nanqinlang.ko /lib/modules/$(uname -r)/kernel/net/ipv4
@@ -200,13 +200,13 @@ echo -e "obj-m := tcp_nanqinlang.o" > Makefile"
 	fi
 	
 
-echo -e "net.core.default_qdisc=fq" >> /etc/sysctl.conf"
-echo -e "net.ipv4.tcp_congestion_control=nanqinlang" >> /etc/sysctl.conf"
+	echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
+	echo "net.ipv4.tcp_congestion_control=nanqinlang" >> /etc/sysctl.conf
 	sysctl -p
-echo -e ""${Info}MoghayyerBBRfaal shod!！"""
+	echo -e ""${Info}MoghayyerBBRfaal shod!！""
 }
 
-#Faal kardan Lotserver
+#启用Lotserver
 startlotserver(){
 	remove_all
 	if [[ "${release}" == "centos" ]]; then
@@ -218,7 +218,7 @@ startlotserver(){
 	bash <(wget --no-check-certificate -qO- https://raw.githubusercontent.com/chiakge/lotServer/master/Install.sh) install
 	sed -i '/advinacc/d' /appex/etc/config
 	sed -i '/maxmode/d' /appex/etc/config
-echo -e ""advinacc=\""1\""
+	echo -e ""advinacc=\""1\"
 maxmode=\"1\"">>/appex/etc/config
 	/appex/bin/lotServer.sh restart
 	start_menu
@@ -262,7 +262,7 @@ remove_all(){
 		bash <(wget --no-check-certificate -qO- https://github.com/MoeClub/lotServer/raw/master/Install.sh) uninstall
 	fi
 	clear
-echo -e ""${Info}:Tamame accelerate ha pak shod."""
+	echo -e ""${Info}:清除加速完成。""
 	sleep 1s
 }
 
@@ -283,7 +283,7 @@ optimizing_system(){
 	sed -i '/net.core.netdev_max_backlog/d' /etc/sysctl.conf
  	sed -i '/net.ipv4.tcp_slow_start_after_idle/d' /etc/sysctl.conf
 	sed -i '/net.ipv4.ip_forward/d' /etc/sysctl.conf
-echo -e "fs.file-max = 1000000"
+	echo "fs.file-max = 1000000
 fs.inotify.max_user_instances = 8192
 net.ipv4.tcp_tw_reuse = 1
 net.ipv4.ip_local_port_range = 1024 65535
@@ -300,33 +300,33 @@ net.ipv4.tcp_slow_start_after_idle = 0
 # forward ipv4
 net.ipv4.ip_forward = 1">>/etc/sysctl.conf
 	sysctl -p
-echo -e "*               soft    nofile           1000000"
+	echo "*               soft    nofile           1000000
 *               hard    nofile          1000000">/etc/security/limits.conf
-echo -e "ulimit -SHn 1000000">>/etc/profile"
-	read -p "Baraye faal shodan config system, VPS bayad restart beshe. Hala restart konam? [Y/n] :" yn
+	echo "ulimit -SHn 1000000">>/etc/profile
+	read -p "需要重启VPS后，才能生效系统优化配置，是否现在重启 ? [Y/n] :" yn
 	[ -z "${yn}" ] && yn="y"
 	if [[ $yn == [Yy] ]]; then
-echo -e ""${Info} VPS dar hale restart ast..."""
+		echo -e ""${Info} VPS dar hale restart ast...""
 		reboot
 	fi
 }
 #更新脚本
 Update_Shell(){
-echo -e ""当前版本为 [ ${sh_ver} ]，Checking new version......"""
+	echo -e ""当前版本为 [ ${sh_ver} ]，开始检测最新版本...""
 	sh_new_ver=$(wget --no-check-certificate -qO- "http://${github}/tcp.sh"|grep 'sh_ver="'|awk -F "=" '{print $NF}'|sed 's/\"//g'|head -1)
-echo -e ""${Error} Check shodan version jadid khata dad! !"" && start_menu"
+	[[ -z ${sh_new_ver} ]] && echo -e ""${Error} 检测最新版本失败 !"" && start_menu
 	if [[ ${sh_new_ver} != ${sh_ver} ]]; then
-echo -e ""Version jadid peyda shod[ ${sh_new_ver} ]，是否更新？[Y/n]"""
-		read -p "(default: y):" yn
+		echo -e ""发现新版本[ ${sh_new_ver} ]，是否更新？[Y/n]""
+		read -p "(默认: y):" yn
 		[[ -z "${yn}" ]] && yn="y"
 		if [[ ${yn} == [Yy] ]]; then
 			wget -N --no-check-certificate http://${github}/tcp.sh && chmod +x tcp.sh
-echo -e ""Script update shod be version jadid!![ ${sh_new_ver} ] !"""
+			echo -e ""script update shod be jadidtarin version![ ${sh_new_ver} ] !""
 		else
-echo -e "&& echo "	Cancel shod..." && echo"
+			echo && echo "	已取消..." && echo
 		fi
 	else
-echo -e ""Alaaan jadidtarin version ro dari![ ${sh_new_ver} ] !"""
+		echo -e ""当前已是最新版本[ ${sh_new_ver} ] !""
 		sleep 5s
 	fi
 }
@@ -334,7 +334,7 @@ echo -e ""Alaaan jadidtarin version ro dari![ ${sh_new_ver} ] !"""
 #开始菜单
 start_menu(){
 clear
-echo -e "&& echo -e " TCP加速 一键安装管理Script ${Red_font_prefix}[v${sh_ver}]${Font_color_suffix}"
+echo && echo -e " TCP加速 一键安装管理脚本 ${Red_font_prefix}[v${sh_ver}]${Font_color_suffix}
   -- 就是爱生活 | 94ish.me --
   
  ${Green_font_prefix}0.${Font_color_suffix} 升级脚本
@@ -356,13 +356,13 @@ echo -e "&& echo -e " TCP加速 一键安装管理Script ${Red_font_prefix}[v${s
 
 	check_status
 	if [[ ${kernel_status} == "noinstall" ]]; then
-echo -e "" Vaziat felan:: ${Green_font_prefix}Nasb nashode${Font_color_suffix} kernel accelerate ${Red_font_prefix}Aval kernel ro nasb kon${Font_color_suffix}"""
+		echo -e "" 当前状态: ${Green_font_prefix}未Nasb${Font_color_suffix} 加速内核 ${Red_font_prefix}请先Nasb内核${Font_color_suffix}""
 	else
-echo -e "" Vaziat felan:: ${Green_font_prefix}Nasb shode${Font_color_suffix} ${_font_prefix}${kernel_status}${Font_color_suffix} kernel accelerate , ${Green_font_prefix}${run_status}${Font_color_suffix}"""
+		echo -e "" 当前状态: ${Green_font_prefix}nasb shode${Font_color_suffix} ${_font_prefix}${kernel_status}${Font_color_suffix} 加速内核 , ${Green_font_prefix}${run_status}${Font_color_suffix}""
 		
 	fi
 echo
-read -p " Lotfan adad ra vared konid [0-11]:" num
+read -p " Lotfan vared konid数字 [0-11]:" num
 case "$num" in
 	0)
 	Update_Shell
@@ -402,7 +402,7 @@ case "$num" in
 	;;
 	*)
 	clear
-echo -e ""${Error}:Lotfan vared konidAdad sahih [0-11]"""
+	echo -e ""${Error}:Lotfan vared konid正确数字 [0-11]""
 	sleep 5s
 	start_menu
 	;;
@@ -410,51 +410,51 @@ esac
 }
 #############Ghesmate modiriat kernel#############
 
-#Hazf kardan kernel haye ezafi
+#删除多余内核
 detele_kernel(){
 	if [[ "${release}" == "centos" ]]; then
 		rpm_total=`rpm -qa | grep kernel | grep -v "${kernel_version}" | grep -v "noarch" | wc -l`
 		if [ "${rpm_total}" > "1" ]; then
-echo -e ""检测到 ${rpm_total} 个其余内核，开始Uninstall..."""
+			echo -e ""检测到 ${rpm_total} 个其余内核，开始Uninstall...""
 			for((integer = 1; integer <= ${rpm_total}; integer++)); do
 				rpm_del=`rpm -qa | grep kernel | grep -v "${kernel_version}" | grep -v "noarch" | head -${integer}`
-echo -e ""开始Uninstall ${rpm_del} 内核..."""
+				echo -e ""开始Uninstall ${rpm_del} 内核...""
 				rpm --nodeps -e ${rpm_del}
-echo -e ""Uninstall ${rpm_del} 内核Uninstall完成，继续..."""
+				echo -e ""Uninstall ${rpm_del} 内核Uninstall完成，继续...""
 			done
-echo -e "--nodeps -e "内核卸载完毕，继续...""
+			echo --nodeps -e "内核卸载完毕，继续..."
 		else
-echo -e "" 检测到 内核 数量不正确，请Check !"" && exit 1"
+			echo -e "" 检测到 内核 数量不正确，请Check !"" && exit 1
 		fi
 	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
 		deb_total=`dpkg -l | grep linux-image | awk '{print $2}' | grep -v "${kernel_version}" | wc -l`
 		if [ "${deb_total}" > "1" ]; then
-echo -e ""检测到 ${deb_total} 个其余内核，开始Uninstall..."""
+			echo -e ""检测到 ${deb_total} 个其余内核，开始Uninstall...""
 			for((integer = 1; integer <= ${deb_total}; integer++)); do
 				deb_del=`dpkg -l|grep linux-image | awk '{print $2}' | grep -v "${kernel_version}" | head -${integer}`
-echo -e ""开始Uninstall ${deb_del} 内核..."""
+				echo -e ""开始Uninstall ${deb_del} 内核...""
 				apt-get purge -y ${deb_del}
-echo -e ""Uninstall ${deb_del} 内核Uninstall完成，继续..."""
+				echo -e ""Uninstall ${deb_del} 内核Uninstall完成，继续...""
 			done
-echo -e ""内核Uninstall完毕，继续..."""
+			echo -e ""内核Uninstall完毕，继续...""
 		else
-echo -e "" 检测到 内核 数量不正确，请Check !"" && exit 1"
+			echo -e "" 检测到 内核 数量不正确，请Check !"" && exit 1
 		fi
 	fi
 }
 
-#Update kardan boot (grub)
+#更新引导
 BBR_grub(){
 	if [[ "${release}" == "centos" ]]; then
         if [[ ${version} = "6" ]]; then
             if [ ! -f "/boot/grub/grub.conf" ]; then
-echo -e ""${Error} /boot/grub/grub.conf 找不到，请Check."""
+                echo -e ""${Error} /boot/grub/grub.conf 找不到，请Check.""
                 exit 1
             fi
             sed -i 's/^default=.*/default=0/g' /boot/grub/grub.conf
         elif [[ ${version} = "7" ]]; then
             if [ ! -f "/boot/grub2/grub.cfg" ]; then
-echo -e ""${Error} /boot/grub2/grub.cfg 找不到，请Check."""
+                echo -e ""${Error} /boot/grub2/grub.cfg 找不到，请Check.""
                 exit 1
             fi
             grub2-set-default 0
@@ -511,22 +511,22 @@ check_sys_bbr(){
 		if [[ ${version} -ge "6" ]]; then
 			installbbr
 		else
-echo -e ""${Error} BBR内核不PushtibaniSystem feli ${release} ${version} ${bit} !"" && exit 1"
+			echo -e ""${Error} BBR内核不PushtibaniSystem feli ${release} ${version} ${bit} !"" && exit 1
 		fi
 	elif [[ "${release}" == "debian" ]]; then
 		if [[ ${version} -ge "8" ]]; then
 			installbbr
 		else
-echo -e ""${Error} BBR内核不PushtibaniSystem feli ${release} ${version} ${bit} !"" && exit 1"
+			echo -e ""${Error} BBR内核不PushtibaniSystem feli ${release} ${version} ${bit} !"" && exit 1
 		fi
 	elif [[ "${release}" == "ubuntu" ]]; then
 		if [[ ${version} -ge "14" ]]; then
 			installbbr
 		else
-echo -e ""${Error} BBR内核不PushtibaniSystem feli ${release} ${version} ${bit} !"" && exit 1"
+			echo -e ""${Error} BBR内核不PushtibaniSystem feli ${release} ${version} ${bit} !"" && exit 1
 		fi
 	else
-echo -e ""${Error} BBR内核不PushtibaniSystem feli ${release} ${version} ${bit} !"" && exit 1"
+		echo -e ""${Error} BBR内核不PushtibaniSystem feli ${release} ${version} ${bit} !"" && exit 1
 	fi
 }
 
@@ -536,22 +536,22 @@ check_sys_bbrplus(){
 		if [[ ${version} -ge "6" ]]; then
 			installbbrplus
 		else
-echo -e ""${Error} BBRplus内核不PushtibaniSystem feli ${release} ${version} ${bit} !"" && exit 1"
+			echo -e ""${Error} BBRplus内核不PushtibaniSystem feli ${release} ${version} ${bit} !"" && exit 1
 		fi
 	elif [[ "${release}" == "debian" ]]; then
 		if [[ ${version} -ge "8" ]]; then
 			installbbrplus
 		else
-echo -e ""${Error} BBRplus内核不PushtibaniSystem feli ${release} ${version} ${bit} !"" && exit 1"
+			echo -e ""${Error} BBRplus内核不PushtibaniSystem feli ${release} ${version} ${bit} !"" && exit 1
 		fi
 	elif [[ "${release}" == "ubuntu" ]]; then
 		if [[ ${version} -ge "14" ]]; then
 			installbbrplus
 		else
-echo -e ""${Error} BBRplus内核不PushtibaniSystem feli ${release} ${version} ${bit} !"" && exit 1"
+			echo -e ""${Error} BBRplus内核不PushtibaniSystem feli ${release} ${version} ${bit} !"" && exit 1
 		fi
 	else
-echo -e ""${Error} BBRplus内核不PushtibaniSystem feli ${release} ${version} ${bit} !"" && exit 1"
+		echo -e ""${Error} BBRplus内核不PushtibaniSystem feli ${release} ${version} ${bit} !"" && exit 1
 	fi
 }
 
@@ -568,7 +568,7 @@ check_sys_Lotsever(){
 			kernel_version="3.10.0-327"
 			installlot
 		else
-echo -e ""${Error} Lotsever不PushtibaniSystem feli ${release} ${version} ${bit} !"" && exit 1"
+			echo -e ""${Error} Lotsever不PushtibaniSystem feli ${release} ${version} ${bit} !"" && exit 1
 		fi
 	elif [[ "${release}" == "debian" ]]; then
 		if [[ ${version} = "7" || ${version} = "8" ]]; then
@@ -585,7 +585,7 @@ echo -e ""${Error} Lotsever不PushtibaniSystem feli ${release} ${version} ${bit}
 				installlot
 			fi
 		else
-echo -e ""${Error} Lotsever不PushtibaniSystem feli ${release} ${version} ${bit} !"" && exit 1"
+			echo -e ""${Error} Lotsever不PushtibaniSystem feli ${release} ${version} ${bit} !"" && exit 1
 		fi
 	elif [[ "${release}" == "ubuntu" ]]; then
 		if [[ ${version} -ge "12" ]]; then
@@ -597,10 +597,10 @@ echo -e ""${Error} Lotsever不PushtibaniSystem feli ${release} ${version} ${bit}
 				installlot
 			fi
 		else
-echo -e ""${Error} Lotsever不PushtibaniSystem feli ${release} ${version} ${bit} !"" && exit 1"
+			echo -e ""${Error} Lotsever不PushtibaniSystem feli ${release} ${version} ${bit} !"" && exit 1
 		fi
 	else
-echo -e ""${Error} Lotsever不PushtibaniSystem feli ${release} ${version} ${bit} !"" && exit 1"
+		echo -e ""${Error} Lotsever不PushtibaniSystem feli ${release} ${version} ${bit} !"" && exit 1
 	fi
 }
 
@@ -611,7 +611,7 @@ check_status(){
 		kernel_status="BBRplus"
 	elif [[ ${kernel_version} = "3.10.0" || ${kernel_version} = "3.16.0" || ${kernel_version} = "3.2.0" || ${kernel_version} = "4.8.0" || ${kernel_version} = "3.13.0"  || ${kernel_version} = "2.6.32" || ${kernel_version} = "4.9.0" ]]; then
 		kernel_status="Lotserver"
-echo -e "${kernel_version} | awk -F'.' '{print $1}'` == "4" ]] && [[ `echo ${kernel_version} | awk -F'.' '{print $2}'` -ge 9 ]] || [[ `echo ${kernel_version} | awk -F'.' '{print $1}'` -ge "5" ]]; then"
+	elif [[ `echo ${kernel_version} | awk -F'.' '{print $1}'` == "4" ]] && [[ `echo ${kernel_version} | awk -F'.' '{print $2}'` -ge 9 ]] || [[ `echo ${kernel_version} | awk -F'.' '{print $1}'` -ge "5" ]]; then
 		kernel_status="BBR"
 	else 
 		kernel_status="noinstall"
@@ -672,5 +672,5 @@ echo -e "${kernel_version} | awk -F'.' '{print $1}'` == "4" ]] && [[ `echo ${ker
 #############Bakhshe check system#############
 check_sys
 check_version
-echo -e ""${Error} 本Script不PushtibaniSystem feli ${release} !"" && exit 1"
+[[ ${release} != "debian" ]] && [[ ${release} != "ubuntu" ]] && [[ ${release} != "centos" ]] && echo -e ""${Error} 本脚本不PushtibaniSystem feli ${release} !"" && exit 1
 start_menu
